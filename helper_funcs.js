@@ -20,7 +20,7 @@ async function createConnection() {
         throw error; // Re-throw the error for handling in the caller function
     }
 }
-connection = createConnection();
+
 
 // Function to reserve a date
 async function reserveDate(query, method, connection) {
@@ -28,7 +28,6 @@ async function reserveDate(query, method, connection) {
 }
 
 // Function to look up upcoming reservations for a patient
-
 
 async function lookup(query, method, connection) {
     try {
@@ -43,6 +42,9 @@ async function lookup(query, method, connection) {
         const { startDate, N } = query;
         console.log('Received query parameters:', startDate, N);
 
+        // Parse N to an integer
+        const limit = parseInt(N);
+
         const sql = `
             SELECT * 
             FROM Appointments 
@@ -51,7 +53,7 @@ async function lookup(query, method, connection) {
             LIMIT ?`;
         console.log('Executing SQL query:', sql);
 
-        const [rows, fields] =  connection.query(sql, [startDate, N]);
+        const [rows, fields] = await connection.query(sql, [startDate, limit]); // Use the parsed limit value
         console.log('Received query results:', rows);
 
         const appointments = rows.map(row => ({
@@ -67,6 +69,7 @@ async function lookup(query, method, connection) {
         return { code: 405, body: JSON.stringify({ error: 'Method Not Allowed' }), headers: {} };
     }
 }
+
 
 // Function to cancel a reservation
 async function cancelReservation(query, method, connection) {
