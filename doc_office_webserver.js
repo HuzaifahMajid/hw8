@@ -36,8 +36,8 @@ function findResourceHandler({ path }) {
 
 // Function to run the API on the resource
 async function runHandler({ handler, request, response, query, method }) {
-  const connection = createConnection(); // Create the connection
 
+  const connection = await createConnection();
     const resMsg = await handler(query, method,connection); // Pass method to handler function
     finalizeResponse({ response, resMsg });
 }
